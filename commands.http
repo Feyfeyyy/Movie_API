@@ -1,0 +1,42 @@
+# Test your FastAPI endpoints
+
+
+# Get all movies via params
+GET http://localhost:8000/api/v1/movies/
+Content-Type: application/json
+
+{
+  "title": "movie_title (string)",
+  "genre": "movie_genre (string)",
+  "year": "movie_year (string)",
+  "runtime": "movie_runtime (string)",
+}
+
+###
+
+# Get top five movies for all users
+GET http://127.0.0.1:8000/api/v1/movies/top_five/total_user
+Content-Type: application/json
+
+###
+
+
+# Get top five movies for one user
+GET http://localhost:8000/api/v1/movies/top_five/{user_id}
+Content-Type: application/json
+
+{
+  "user_id": "user_id (int)",
+}
+
+###
+
+# update/add user rating for a user
+PUT http://localhost:8000/api/v1/movies/user_rating/{movie_id}/{user_id}/{rating}
+Content-Type: application/json
+
+{
+  "movie_id": "movie_id (integer)",
+  "user_id": "user_id (integer)",
+  "rating": "rating (integer)",
+}
