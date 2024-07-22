@@ -1,0 +1,60 @@
+services:
+  movies-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: movies_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d movies_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  movies-testdb:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: movies_testdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d movies_testdb" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  movies-web:
+    build: .
+    command: poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    depends_on:
+      movies-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@movies-db:5432/movies-db
+    volumes:
+      - .:/app
+
+  test:
+    build: .
+    entrypoint: ["poetry", "run", "python", "-m", "pytest"]
+    depends_on:
+      movies-testdb:
+        condition: service_healthy
+    environment:
+      TEST_DATABASE_URL: postgresql://postgres:postgres@movies-testdb:5432/movies-testdb
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
+  postgres_test_data:
