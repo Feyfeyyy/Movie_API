@@ -1,7 +1,3 @@
-import pytest
-from fastapi import HTTPException
-
-
 class TestMovie:
     def test_get_movies_with_no_movies_in_database(self, client):
         response = client.get("/movies")
@@ -19,7 +15,7 @@ class TestMovie:
             "data": [
                 {
                     "id": 1,
-                    "user_id": None,
+                    "user_id": 1,
                     "title": "Test Movie",
                     "genre": "Test Genre",
                     "year": "2021",

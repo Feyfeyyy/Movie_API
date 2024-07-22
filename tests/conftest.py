@@ -80,6 +80,8 @@ def client(
 @pytest.fixture()
 def create_mock_movie():
     mock_movie = Movie(
+        id=1,
+        user_id=1,
         title="Test Movie",
         genre="Test Genre",
         year="2021",
