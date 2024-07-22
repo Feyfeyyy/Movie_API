@@ -1,7 +1,3 @@
-from dotenv import load_dotenv
-
-load_dotenv(".env")
-
 from fastapi import FastAPI
 
 from app.routes.movie_info import router as movie_router
