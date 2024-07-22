@@ -13,7 +13,6 @@ class TestMovie:
         db_session.commit()
 
         response = client.get("/movies")
-        print(response.json())
         assert response.status_code == 200
         assert response.json() == {
             "message": "Movie data retrieved from database",
