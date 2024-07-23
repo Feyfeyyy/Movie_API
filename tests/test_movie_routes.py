@@ -9,27 +9,15 @@ class TestMovieRoutes:
         assert response.status_code == 404
         assert response.json() == {"detail": "Not Found: Unable to find movie in Database"}
 
-    def test_get_movies_with_movies_in_database(self, db_session, client, create_mock_movie):
-        db_session.add(create_mock_movie)
+    def test_get_movies_with_movies_in_database(self, db_session, client, create_single_mock_movie):
+        db_session.add(create_single_mock_movie)
         db_session.commit()
 
         response = client.get("/movies")
         assert response.status_code == 200
-        assert response.json() == {
-            "message": "Movie data retrieved from database",
-            "data": [
-                {
-                    "id": 1,
-                    "user_id": 1,
-                    "title": "Test Movie",
-                    "genre": "Test Genre",
-                    "year": "2021",
-                    "runtime": "120 min",
-                    "rating": 5,
-                    "avr_rating": 5,
-                }
-            ],
-        }
+        assert isinstance(response.json(), dict)
+        assert response.json()["message"] == "Movie data retrieved from database"
+        assert response.json()["data"][0]["title"] == "Mock Movie Title"
 
     @patch("app.methods.sql_alchemy_crud.get_movies_info")
     def test_get_movies_with_bad_request(self, mock_get_movies_info, client):

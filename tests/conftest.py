@@ -1,4 +1,5 @@
 from os import environ
+import random
 from typing import Any, Generator
 
 import pytest
@@ -78,15 +79,34 @@ def client(
 
 
 @pytest.fixture()
-def create_mock_movie():
+def create_single_mock_movie():
     mock_movie = Movie(
-        id=1,
-        user_id=1,
-        title="Test Movie",
-        genre="Test Genre",
-        year="2021",
-        runtime="120 min",
-        rating=5,
-        avr_rating=5
+        id=random.randint(1, 5),
+        user_id=random.randint(1, 5),
+        title="Mock Movie Title",
+        genre="Mock Movie Genre",
+        year=random.randint(2000, 2021),
+        runtime=f"{random.randint(90, 180)} min",
+        rating=random.randint(1, 5),
+        avr_rating=random.randint(1, 5),
     )
     return mock_movie
+
+
+@pytest.fixture()
+def create_mock_movie_list():
+    mock_movie_list = []
+    for i in range(5):
+        mock_movie_list.append(
+            Movie(
+                id=i,
+                user_id=random.randint(1, 5),
+                title=f"Mock Movie Title {i}",
+                genre="Mock Movie Genre",
+                year=random.randint(2000, 2021),
+                runtime=f"{random.randint(90, 180)} min",
+                rating=random.randint(1, 5),
+                avr_rating=random.randint(1, 5),
+            )
+        )
+    return mock_movie_list
