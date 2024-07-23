@@ -3,10 +3,18 @@ from os import environ
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = environ.get("DATABASE_URI", "postgresql://postgres:postgres@movies-db:5432/movies-db")
+from dotenv import load_dotenv
+
+from app.models.movie import Base
+
+load_dotenv(".env")
+
+DATABASE_URL = environ.get("DATABASE_URI", "postgresql://postgres:postgres@movies-db:5432/movies_db")
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base.metadata.create_all(bind=engine)
 
 
 def get_db_session() -> SessionLocal:
