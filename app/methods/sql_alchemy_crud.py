@@ -58,22 +58,22 @@ def update_movie_rating(db: Session, movie_id: int, user_id: int, rating: int) -
         db_rating.rating = rating
         db_rating.avr_rating = avr_ratings
         db.merge(db_rating)
-    else:
-        avr_ratings = (
-            db.query(func.avg(Movie.rating))
-            .filter(func.lower(Movie.title).contains(db_rating.title.lower()))
-            .scalar()
-        )
-        db_rating = Movie(
-            user_id=user_id,
-            rating=rating,
-            avr_rating=avr_ratings,
-            year=db_rating.year,
-            runtime=db_rating.runtime,
-            genre=db_rating.genre,
-            title=db_rating.title,
-        )
-        db.add(db_rating)
+
+    avr_ratings = (
+        db.query(func.avg(Movie.rating))
+        .filter(func.lower(Movie.title).contains(db_rating.title.lower()))
+        .scalar()
+    )
+    db_rating = Movie(
+        user_id=user_id,
+        rating=rating,
+        avr_rating=avr_ratings,
+        year=db_rating.year,
+        runtime=db_rating.runtime,
+        genre=db_rating.genre,
+        title=db_rating.title,
+    )
+    db.add(db_rating)
 
     db.commit()
     db.refresh(db_rating)
