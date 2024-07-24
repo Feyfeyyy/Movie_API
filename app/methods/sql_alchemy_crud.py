@@ -49,7 +49,7 @@ def update_movie_rating(db: Session, movie_id: int, user_id: int, rating: int) -
     db_rating = (
         db.query(Movie).filter(Movie.id == movie_id, Movie.user_id == user_id).first()
     )
-    if db_rating.rating:
+    if db_rating:
         avr_ratings = (
             db.query(func.avg(Movie.rating))
             .filter(func.lower(Movie.title).contains(db_rating.title.lower()))
@@ -58,7 +58,6 @@ def update_movie_rating(db: Session, movie_id: int, user_id: int, rating: int) -
         db_rating.rating = rating
         db_rating.avr_rating = avr_ratings
         db.merge(db_rating)
-
     avr_ratings = (
         db.query(func.avg(Movie.rating))
         .filter(func.lower(Movie.title).contains(db_rating.title.lower()))
