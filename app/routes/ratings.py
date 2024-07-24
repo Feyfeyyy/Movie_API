@@ -83,7 +83,7 @@ async def get_top_movies_one_user(
 
 
 @router.put(
-    "/movies/user_rating/{movie_id}/{user_id}/{rating}",
+    "/movies/user_rating/{user_id}/{movie_id}/{rating}",
     response_model=UpdateRatingResponse,
 )
 async def update_movie_rating(
@@ -100,7 +100,7 @@ async def update_movie_rating(
         user = crud.get_movie_for_one_user(db, movie_id, user_id)
         if user is None:
             raise HTTPException(status_code=404, detail="No user found in Database")
-        rating_result = crud.update_movie_rating(db, user.user_id, user.id, rating)
+        rating_result = crud.update_movie_rating(db, user.id, user.user_id, rating)
         return UpdateRatingResponse(
             message=f"Rating value has changed for USER-ID: {user_id} and MOVIE-ID: {movie_id}",
             data=dict(
