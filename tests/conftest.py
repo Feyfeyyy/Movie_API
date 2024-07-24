@@ -1,5 +1,5 @@
-from os import environ
 import random
+from os import environ
 from typing import Any, Generator
 
 import pytest
@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import get_db_session
 from app.models.movie import Base, Movie
-from app.routes.movie_info import router as movie_router
+from app.routes.movie import router as movie_router
 from app.routes.ratings import router as rating_router
 
 
@@ -60,7 +60,7 @@ def db_session():
 
 @pytest.fixture()
 def client(
-        app: FastAPI, db_session: TestingSessionLocal
+    app: FastAPI, db_session: TestingSessionLocal
 ) -> Generator[TestClient, Any, None]:
     """
     Create a new FastAPI TestClient that uses the `db_session` fixture to override
