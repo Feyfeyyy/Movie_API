@@ -95,7 +95,7 @@ class TestRatingRoutes:
         movie_id = create_mock_movie_list[1].id
 
         response = client.put(
-            f"/movies/user_rating/{movie_id}/{user_id}/1",
+            f"/movies/user_rating/{user_id}/{movie_id}/1",
         )
         assert response.status_code == 200
         assert isinstance(response.json(), dict)
