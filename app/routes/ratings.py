@@ -5,8 +5,8 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import Session
 
 from app.database import get_db_session
-from app.methods import sql_alchemy_crud as crud
-from app.methods.route_helpers import update_movie_dict
+from app.methods.routes_class import Crud
+from app.schemas.base import MovieSchema
 from app.schemas.responses import RatingResponse, UpdateRatingResponse
 
 router = APIRouter()
@@ -20,14 +20,13 @@ async def get_top_movies_all_users(
     Get endpoint for movies to pull movie data from the database for all users and return the top 5 movies
     """
     try:
-        movie_list = []
-        db_movie = crud.get_top_five_movie_ratings(db)
+        movie_crud: Crud = Crud(db)
+        db_movie = movie_crud.get_top_five_movie_ratings()
         if (db_movie is None) or (db_movie == []):
             raise HTTPException(
                 status_code=404, detail="Not Found: No movie found in Database"
             )
-        for info in db_movie:
-            final_movie_list = update_movie_dict(info, movie_list)
+        final_movie_list = movie_crud.create_movie_schema_list(db_movie, in_list=True)
         sort_top_five_movies = sorted(
             final_movie_list, key=lambda m: (m["avr_rating"], m["title"].lower())
         )
@@ -56,12 +55,11 @@ async def get_top_movies_one_user(
     Get endpoint for movies to get all movies from the database with their average rating for one user
     """
     try:
-        movie_list = []
-        user = crud.get_top_five_movie_ratings_by_id(db, user_id)
-        if (user is None) or (user == []):
+        movie_crud: Crud = Crud(db)
+        db_movie = movie_crud.get_top_five_movie_ratings(user_id=user_id)
+        if (db_movie is None) or (db_movie == []):
             raise HTTPException(status_code=404, detail="No user found in Database")
-        for info in user:
-            final_movie_list = update_movie_dict(info, movie_list)
+        final_movie_list = movie_crud.create_movie_schema_list(db_movie, in_list=True)
         sort_top_five_movies = sorted(
             final_movie_list, key=lambda m: (m["avr_rating"], m["title"].lower())
         )
@@ -83,7 +81,7 @@ async def get_top_movies_one_user(
 
 
 @router.put(
-    "/movies/user_rating/{movie_id}/{user_id}/{rating}",
+    "/movies/user_rating/{user_id}/{movie_id}/{rating}",
     response_model=UpdateRatingResponse,
 )
 async def update_movie_rating(
@@ -93,23 +91,18 @@ async def update_movie_rating(
     Put endpoint for movies to update the rating of a movie for a specific user
     """
     try:
+        movie_crud: Crud = Crud(db)
         if rating < 1 or rating > 5:
             raise HTTPException(
                 status_code=400, detail="Rating must be between 1 and 5"
             )
-        user = crud.get_movie_for_one_user(db, movie_id, user_id)
+        user = movie_crud.get_movie_for_one_user(movie_id, user_id)
         if user is None:
             raise HTTPException(status_code=404, detail="No user found in Database")
-        rating_result = crud.update_movie_rating(db, user.user_id, user.id, rating)
+        rating_result = movie_crud.update_movie_rating(user.id, user.user_id, rating)
         return UpdateRatingResponse(
             message=f"Rating value has changed for USER-ID: {user_id} and MOVIE-ID: {movie_id}",
-            data=dict(
-                movie_id=rating_result.id,
-                user_id=rating_result.user_id,
-                rating=rating_result.rating,
-                average_rating=rating_result.avr_rating,
-                title=rating_result.title,
-            ),
+            data=MovieSchema(**rating_result.__dict__),
         )
     except OperationalError:
         raise HTTPException(

@@ -5,8 +5,7 @@ from sqlalchemy.exc import OperationalError, ProgrammingError
 from sqlalchemy.orm import Session
 
 from app.database import get_db_session
-from app.methods import sql_alchemy_crud as crud
-from app.methods.route_helpers import update_movie_dict
+from app.methods.routes_class import Crud
 from app.schemas.responses import MovieResponse
 
 router = APIRouter()
@@ -24,14 +23,13 @@ async def pull_movie_info(
     user in JSON format
     """
     try:
-        movie_list = []
-        db_movie = crud.get_movies_info(db, title, genre, year)
+        movie_crud: Crud = Crud(db)
+        db_movie = movie_crud.get_movies_info(title, genre, year)
         if (db_movie is None) or (db_movie == []):
             raise HTTPException(
                 status_code=404, detail="Not Found: Unable to find movie in Database"
             )
-        for info in db_movie:
-            final_movie_list = update_movie_dict(info, movie_list)
+        final_movie_list = movie_crud.create_movie_schema_list(db_movie)
         return MovieResponse(
             message="Movie data retrieved from database", data=final_movie_list
         )

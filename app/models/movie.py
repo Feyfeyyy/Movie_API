@@ -8,6 +8,7 @@ class Movie(Base):
     """
     Movie model
     """
+
     __tablename__ = "movies"
 
     id = Column(Integer, primary_key=True, index=True)
