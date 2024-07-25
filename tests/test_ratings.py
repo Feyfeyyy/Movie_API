@@ -35,7 +35,7 @@ class TestRatingRoutes:
         )
         assert len(response.json()["data"]) == length
 
-    @patch("app.methods.sql_alchemy_crud.get_top_five_movie_ratings")
+    @patch("app.methods.routes_class.Crud.get_top_five_movie_ratings")
     def test_get_top_movies_all_users_with_bad_request(
         self, mock_get_top_five_movie_ratings, client
     ):
@@ -48,7 +48,7 @@ class TestRatingRoutes:
             "detail": "Bad request: Connection to Database could not be established"
         }
 
-    @patch("app.methods.sql_alchemy_crud.get_top_five_movie_ratings")
+    @patch("app.methods.routes_class.Crud.get_top_five_movie_ratings")
     def test_get_top_movies_all_users_with_no_movies_table_found(
         self, mock_get_top_five_movie_ratings, client
     ):
@@ -61,7 +61,7 @@ class TestRatingRoutes:
             "detail": "Bad request: Movies table does not exist in Database"
         }
 
-    @patch("app.methods.sql_alchemy_crud.get_top_five_movie_ratings_by_id")
+    @patch("app.methods.routes_class.Crud.get_top_five_movie_ratings")
     def test_get_top_movies_one_user_with_bad_request(
         self, mock_get_top_five_movie_ratings_by_id, client
     ):
@@ -74,7 +74,7 @@ class TestRatingRoutes:
             "detail": "Internal Server Error: Connection to Database could not be established"
         }
 
-    @patch("app.methods.sql_alchemy_crud.get_top_five_movie_ratings_by_id")
+    @patch("app.methods.routes_class.Crud.get_top_five_movie_ratings")
     def test_get_top_movies_one_user_with_no_movies_table_found(
         self, mock_get_top_five_movie_ratings_by_id, client
     ):

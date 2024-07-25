@@ -23,7 +23,7 @@ class TestMovieRoutes:
         assert response.json()["message"] == "Movie data retrieved from database"
         assert response.json()["data"][0]["title"] == "Mock Movie Title"
 
-    @patch("app.methods.sql_alchemy_crud.get_movies_info")
+    @patch("app.methods.routes_class.Crud.get_movies_info")
     def test_get_movies_with_bad_request(self, mock_get_movies_info, client):
         mock_get_movies_info.side_effect = OperationalError(
             "Mock Operational Error", "", ""
@@ -34,7 +34,7 @@ class TestMovieRoutes:
             "detail": "Bad request: Connection to Database could not be established"
         }
 
-    @patch("app.methods.sql_alchemy_crud.get_movies_info")
+    @patch("app.methods.routes_class.Crud.get_movies_info")
     def test_get_movies_with_no_movies_table_found(self, mock_get_movies_info, client):
         mock_get_movies_info.side_effect = ProgrammingError(
             "Mock Programming Error", "", ""
